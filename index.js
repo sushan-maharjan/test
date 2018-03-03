@@ -1,31 +1,31 @@
-var path = require('path')
-var funcs = require('./funcs')
-var encodeName = funcs.encodName
+const path = require('path');
+const funcs = require('./funcs');
+const encodeName = funcs.encodeName;
 
-var session = {
+const session = {
   username: process.argv[2],
   lastMessageHash: process.argv[3]
-}
+};
 
 if (!session.username || !session.lastMessageHash) {
-  console.log('Usage: node index.js <username> <hash>')
+  console.log('Usage: node index.js <username> <hash>');
   process.exit(0)
 }
 
 // 1. load the database
-var dbFile = path.join(__dirname, 'db', 'index.json')
+const dbFile = path.join(__dirname, 'db', 'index.json');
 funcs.loadDb(dbFile, function (err, db) {
 
   // 2. encode the name
-  var encoded = encodeName(session.usrename)
+  const encoded = encodeName(session.username);
 
   // 3. find the user's inbox
-  var inbox = funcs.findInbox(db, encoded)
+  const inbox = funcs.findInbox(db, encoded);
 
   // 4. find the next message
-  var nextMessage = funcs.findNextMessage(inbox, session.lastMessageHash)
+  const nextMessage = funcs.findNextMessage(inbox, session.lastMessageHash);
 
   // 5. print out the message.
   // Paste the console output into the "Solution" field and you're done!
-  console.log(nextMessage)
-})
+  console.log(nextMessage);
+});

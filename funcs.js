@@ -1,5 +1,5 @@
-var fs = require('fs')
-var path = require('path')
+const fs = require('fs');
+const path = require('path');
 
 /**
  * General purpose data encoding
@@ -7,7 +7,7 @@ var path = require('path')
  * (string): string
  */
 function encode (data) {
-  return (new Buffer(data)).toString('base64')
+  return (new Buffer(data)).toString('base64');
 }
 
 /**
@@ -16,7 +16,7 @@ function encode (data) {
  * (string): string
  */
 function decode (data) {
-  return (new Buffer('' + data, 'base64')).toString()
+  return (new Buffer('' + data, 'base64')).toString();
 }
 
 /**
@@ -25,8 +25,8 @@ function decode (data) {
  * (string): string
 */
 module.exports.encodeName = function (name) {
-  return encode('@' + name)
-}
+  return encode('@' + name);
+};
 
 /**
  * Load the database
@@ -37,7 +37,7 @@ module.exports.loadDb = function (dbFile, cb) {
   fs.readFile(dbFile, function (err, res) {
     if (err) { return cb(err) }
 
-    var messages
+    let messages;
     try {
       messages = JSON.parse(res)
     } catch (e) {
@@ -46,7 +46,7 @@ module.exports.loadDb = function (dbFile, cb) {
 
     return cb(null, { file: dbFile, messages: messages })
   })
-}
+};
 
 /**
  * Find the user's inbox, given their encoded username
@@ -54,7 +54,7 @@ module.exports.loadDb = function (dbFile, cb) {
  * (Object, string): Object
  */
 module.exports.findInbox = function (db, encodedName) {
-  var messages = db.messages
+  const messages = db.messages;
   return {
     dir: path.dirname(db.file),
     messages: Object.keys(messages).reduce(function (acc, key) {
@@ -67,7 +67,7 @@ module.exports.findInbox = function (db, encodedName) {
       } else { return acc }
     }, [])
   }
-}
+};
 
 /**
  * Find the next message, given the hash of the previous message
@@ -76,15 +76,14 @@ module.exports.findInbox = function (db, encodedName) {
  */
 module.exports.findNextMessage = function (inbox, lastHash) {
   // find the message which comes after lastHash
-  var found
-  for (var i = 0; i < inbox.messages.length; i += 1) {
+  let found;
+  for (let i = 0; i < inbox.messages.length; i += 1) {
     if (inbox.messages[i].lastHash === lastHash) {
-      found = i
-      break
+      found = i;
+      break;
     }
   }
-
   // read and decode the message
   return 'from: ' + decode(inbox.messages[found].from) + '\n---\n' +
-    decode(fs.readFile(path.join(inbox.dir, inbox.messages[found].hash), 'utf8'))
-}
+    decode(fs.readFileSync(path.join(inbox.dir, inbox.messages[found].hash), 'utf8'))
+};
